@@ -29,11 +29,13 @@ public class ReflectiveService {
     }
 
     public String invokeCommand(String className, String methodName){
+        String result = "{\"result\":";
         try {
             Class c = Class.forName(className);
             Method method = c.getMethod(methodName);
             String obj = method.invoke(c).toString();
-            return obj;
+            result = result + "\"" + obj + "\"}";
+            return result;
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (NoSuchMethodException e) {
@@ -46,7 +48,16 @@ public class ReflectiveService {
     }
 
     public String unaryInvokeCommand(String className, String methodName, String paramType, String paramValue){
-        return className + " " + methodName + " " + paramType + " " + paramValue;
+        try {
+            Class c = Class.forName(className);
+            Method method = c.getMethod(methodName);
+            Class paramTypeClass = Class.forName(paramType);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
     //binaryInvoke([class name],[method name],[paramtype 1],[param value], [paramtype 1],[param value],)
