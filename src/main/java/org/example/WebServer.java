@@ -10,6 +10,8 @@ public class WebServer {
 
                 ServerSocket serverSocket = null;
 
+                WebPage page = new WebPage();
+
                 ReflectiveService reflectiveService = new ReflectiveService();
 
                 try {
@@ -50,9 +52,9 @@ public class WebServer {
 
                 System.out.println("First Line is: " + firstLine);
 
-                if (!firstLine.equals("GET /favicon.ico HTTP/1.1")) {
-                    String fullCommand = firstLine.split("=")[1].replace("%20", "").replace(" HTTP/1.1", "").toLowerCase();
-                    String command = fullCommand.split("\\(")[0];
+                if (!firstLine.equals("GET /favicon.ico HTTP/1.1") && !firstLine.equals("GET / HTTP/1.1")) {
+                    String fullCommand = firstLine.split("=")[1].replace("%20", "").replace(" HTTP/1.1", "");
+                    String command = fullCommand.split("\\(")[0].toLowerCase();
                     String[] variables = fullCommand.split("\\(")[1].replace(")", "").split(",");
 
                     System.out.println("Command is: " + command);
@@ -72,23 +74,21 @@ public class WebServer {
                         System.out.println(result);
                     }
 
+                    outputLine = result;
+                    out.println("HTTP / 1.1/ OK");
+                    out.println("Content-type: application/json");
+                    out.println();
+                    out.println(outputLine);
                 }
 
-                outputLine =
-                        "<!DOCTYPE html>" +
-                                "<html>" +
-                                "<head>" +
-                                "<meta charset=\"UTF-8\">" +
-                                "<title>Title of the document</title>\n" +
-                                "</head>" +
-                                "<body>" +
-                                "<h1>Mi propio mensaje</h1>" +
-                                "</body>" +
-                                "</html>";
-                out.println("HTTP / 1.1/ OK");
-                out.println("Content-type: text/html");
-                out.println();
-                out.println(outputLine);
+                if(firstLine.equals("GET / HTTP/1.1")){
+                    outputLine = page.getPage();
+                    out.println("HTTP / 1.1/ OK");
+                    out.println("Content-type: text/html");
+                    out.println();
+                    out.println(outputLine);
+                }
+
                 out.close();
                 in.close();
                 clientSocket.close();
